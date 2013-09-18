@@ -414,6 +414,49 @@ void fatdino_upperCase(char *string) {
   }
 }
 
+/* here is the beggining of functions that is needed only for writing,
+ * if you are using the library to only read from disk and need minimum
+ * memory usage feel free to remove it
+ */
+
+int fatdino_getFSINFO(char *device, fatdino_BPB *bpb, fatdino_FSINFO *fsinfo) {
+  //open device and read first sector
+  int fd = open(device, O_RDONLY);
+  unsigned char *buff;
+  unsigned int offset = bpb->BPB_FSInfo * 512;
+  if(fd > 0 && lseek(fd,offset,SEEK_SET)==offset) {
+    buff = malloc(512);
+    if(read(fd, buff, 512) == -1) {
+      close(fd);
+      return -1;
+    }
+    close(fd);
+  } else return -1;
+  
+  memcpy(fsinfo,buff,sizeof(fatdino_FSINFO));
+  free(buff);
+  //check if FSINFO magic values are correct
+  if(
+    fsinfo->FSI_LeadSig == 0x41615252 &&
+    fsinfo->FSI_StrucSig == 0x61417272 &&
+    fsinfo->FSI_TrailSig == 0xAA550000
+  )
+    return 0;
+  else
+    return 1;
+}
+
+uint32_t fatdino_findNextFree(char *device, fatdino_BPB *bpb, uint32_t start) {
+  uint32_t sector = fatdino_getFATSector(bpb, start);
+  //dopoki nie sektor[i] == 0 lub sector >= firstrootsector
+    //dopoki nie sektor[i] == 0 lub i >= 512 / 4
+      //i++
+    //jesli sektor[i] != 0
+      //wczytaj nast sektor
+      //sector++
+  //return cluster = sector * (512 / 4) + i + 2
+  return 0;
+}
 /*
 
 */

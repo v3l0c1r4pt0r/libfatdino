@@ -23,6 +23,8 @@ void print_help(char *fn) {
     "cluster\t\tgets cluster number of file/dir given at ARG\n"<<
     "clusterx\tgets cluster number in hex of file/dir given at ARG\n"<<
     "dir\t\tprints content of directory structure of file/dir at given ARG\n"<<
+    "fsinfo\t\tprints FSINFO structure content\n"<<
+    "mkdir\t\tcreates directory where ARG is in format: /path/to/dir/dir_name\n"<<
     "help\t\tprints this message\n"<<
     "";  
 }
@@ -436,6 +438,58 @@ int main(int argc, char **argv) {
 	    "First cluster number: 0x"<<hex<<((entry->DIR_FstClusHI<<16)+entry->DIR_FstClusLO)<<dec<<"\n"<<
 	    "File size: "<<fatdino_bytesToHuman(entry->DIR_FileSize)<<" ("<<entry->DIR_FileSize<<" B)\n"<<
 	    "";
+	}
+      }
+    }
+    else if(strcmp(argv[1],"fsinfo")==0) {
+      if(argc>2) {
+	fatdino_BPB *bpb = new fatdino_BPB;
+	int rbpb = fatdino_getBPB(argv[2], bpb);
+	if(rbpb==0) {
+	  fatdino_FSINFO *fsinfo = new fatdino_FSINFO;
+	  int fsir = fatdino_getFSINFO(argv[2], bpb, fsinfo);
+	  if(fsir == -1) {
+	    cout<<"error reading fsinfo!\n";
+	    return 1;
+	  }
+	  if(fsir == 1) {
+	    cout<<"FSINFO structure damaged!\n";
+	    return 2;
+	  }
+	  cout<<"Content of FSINFO structure:\n"<<
+	  "\tFree cluster count:\t"<<fsinfo->FSI_Free_Count<<"\n"<<
+	  "\tNext free cluster:\t0x"<<hex<<fsinfo->FSI_Nxt_Free<<dec<<"\n"<<
+	  "";
+	}
+      }
+    }
+    else if(strcmp(argv[1],"mkdir")==0) {
+      if(argc>3) {
+	/* argv[2] -> path
+	 * argv[3] -> device
+	 */
+	fatdino_BPB *bpb = new fatdino_BPB;
+	int rbpb = fatdino_getBPB(argv[3], bpb);
+	if(rbpb==0) {
+	  fatdino_FSINFO *fsinfo = new fatdino_FSINFO;
+	  int fsir = fatdino_getFSINFO(argv[3], bpb, fsinfo);
+	  if(fsir == -1) {
+	    cout<<"error reading fsinfo!\n";
+	    return 1;
+	  }
+	  if(fsir == 1) {
+	    cout<<"FSINFO structure damaged!\n";
+	    return 2;
+	  }
+	  uint32_t firstfree;
+	  if(fsinfo->FSI_Nxt_Free != 0xFFFFFFFF)
+	    firstfree = fatdino_findNextFree(argv[3], bpb, fsinfo->FSI_Nxt_Free);
+	  else
+	    firstfree = fatdino_findNextFree(argv[3], bpb, 2);
+	  if(firstfree>1)
+	    cout<<" too fast!\n";
+	  else
+	    cout<<"Could not find first free cluster. Is there a one?\n";
 	}
       }
     }
