@@ -2,14 +2,16 @@ GCC = gcc
 GPP = g++ -std=c++0x
 all: build build/demo
 debug: GCC += -g
+debug: GPP += -g
 debug:
 	@echo "Debug mode enabled"
+debug: all
 lib: build/libfatdino.o
 libfatdino.o: build/libfatdino.o
 libfatdino.so: build/libfatdino.so
 build/libfatdino.so: build/libfatdino.o
 build/libfatdino.so:
-	gcc -shared -o build/libfatdino.so build/libfatdino.o -lc
+	$(GCC) -shared -o build/libfatdino.so build/libfatdino.o -lc
 build:
 	mkdir build
 build/libfatdino.o:build src/fat32.c src/fat32.h

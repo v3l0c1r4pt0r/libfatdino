@@ -192,6 +192,29 @@ void fatdino_upperCase(char *string);
  */
 
 /*
+ * function that converts string from default system encoding to UTF-16,
+ * src must be double zero terminated
+ * returns 1 on success and -1 on fail
+ */
+//TODO:
+int fatdino_ToUTF16(char *src, char *dst);
+
+
+/*
+ * function that converts string to default system encoding from UTF-16,
+ * src must be double zero terminated
+ * returns 1 on success and -1 on fail
+ */
+//TODO:
+int fatdino_FromUTF16(char *src, char *dst);
+
+/*
+ * function that converts string from one encoding to another using iconv
+ */
+//TODO:
+int fatdino_iconvImplementation(char *src, char *src_enc, char *dst, char *dst_enc);
+
+/*
   function that decides if name given as UTF-16 could be written as SFN only
   and returns SFN and if neccessary LFN created from given name,
   returns 0 if only SFN created, 1 if LFN created too and -1 on fail
@@ -202,7 +225,7 @@ int fatdino_nameToSfnAndLfn(char *name, char *sfn, char *lfn);
 /*
   function that finds next free cluster, returns cluster number or 0 on error
 */
-//TODO:
+//TODO:TODO:TODO:TODO:TODO:TODO:TODO
 uint32_t fatdino_findNextFree(char *device, fatdino_BPB *bpb, uint32_t start);
 
 /*

@@ -419,6 +419,42 @@ void fatdino_upperCase(char *string) {
  * memory usage feel free to remove it
  */
 
+int fatdino_iconvImplementation(char *src, char *src_enc, char *dst, char *dst_enc)
+{
+//       setlocale( LC_ALL, "" );
+      iconv_t cd;
+      if((cd = iconv_open(dst_enc,src_enc)) == (iconv_t) - 1) {		//opening iconv
+	cd = NULL;
+	return -1;
+      }
+      errno = 0;
+      char *tmp = src;
+      char * tmpo = dst;
+      int i;
+      for(i = 0;i<256;i+=2) {
+	if((src[i] == '\0') && (src[i+1] == '\0')) {
+	  i+=2;
+	  break;
+	}
+      }
+      size_t sizei = i;
+      size_t sizeo = 256;
+      size_t rc = iconv(cd, &tmp, &sizei, &tmpo, &sizeo);
+      if(rc == (size_t) - 1 || errno!=0)
+	return -1;
+      iconv_close(cd);
+}
+
+int fatdino_ToUTF16(char *src, char *dst)
+{
+  //TODO
+}
+
+int fatdino_FromUTF16(char *src, char *dst)
+{
+  //TODO
+}
+
 int fatdino_getFSINFO(char *device, fatdino_BPB *bpb, fatdino_FSINFO *fsinfo) {
   //open device and read first sector
   int fd = open(device, O_RDONLY);

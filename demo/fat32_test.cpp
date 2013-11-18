@@ -222,7 +222,7 @@ int main(int argc, char **argv) {
 	  else return 1;
       }
       else {
-	cout<<argv[0]<<": brakujący argument";
+	cout<<argv[0]<<": brakujący argument\n";
 	return 1;
       }
     }
@@ -242,15 +242,15 @@ int main(int argc, char **argv) {
 	    list_dirclus(argv[3], bpb, dir, clus, false);
 	  }
 	  else {
-	    cout<<argv[0]<<": wystąpił błąd";
+	    cout<<argv[0]<<": wystąpił błąd\n";
 	  }
 	}
 	else {
-	  cout<<argv[0]<<": wystąpił błąd";
+	  cout<<argv[0]<<": wystąpił błąd\n";
 	}
       }
       else {
-	cout<<argv[0]<<": brakujący argument";
+	cout<<argv[0]<<": brakujący argument\n";
 	return 1;
       }
     }
@@ -271,15 +271,15 @@ int main(int argc, char **argv) {
 	    list_dirclus(argv[3], bpb, dir, clus, true);
 	  }
 	  else {
-	    cout<<argv[0]<<": wystąpił błąd";
+	    cout<<argv[0]<<": wystąpił błąd\n";
 	  }
 	}
 	else {
-	  cout<<argv[0]<<": wystąpił błąd";
+	  cout<<argv[0]<<": wystąpił błąd\n";
 	}
       }
       else {
-	cout<<argv[0]<<": brakujący argument";
+	cout<<argv[0]<<": brakujący argument\n";
 	return 1;
       }
     }
@@ -358,7 +358,7 @@ int main(int argc, char **argv) {
 	}
       }
       else {
-	cout<<argv[0]<<": brakujący argument";
+	cout<<argv[0]<<": brakujący argument\n";
 	return 1;
       }
     }
@@ -486,8 +486,40 @@ int main(int argc, char **argv) {
 	    firstfree = fatdino_findNextFree(argv[3], bpb, fsinfo->FSI_Nxt_Free);
 	  else
 	    firstfree = fatdino_findNextFree(argv[3], bpb, 2);
-	  if(firstfree>1)
+	  if(firstfree>1/*TMP*/||firstfree==0/*ENDTMP*/)
+	  {
 	    cout<<" too fast!\n";
+	    const char test[54] = {'R',0,'E',0,'A',0,'D',0,'M',0,'E',0,'.',0,'d',0,'i',0,'s',0,'k',0,'d',0,'e',0,'f',0,'i',0,'n',0,'e',0,'s',0,0,0,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
+	    char *out = new char[256];
+	    //UTF16->UTF8
+	    fatdino_iconvImplementation((char*)&test, "UTF-16LE", out, nl_langinfo(CODESET));
+	    //print out
+	    cout<<"README~1DIS: "<<out<<"\n";
+	    //UTF16<-UTF8
+	    char *iconvout = new char[256];
+	    fatdino_iconvImplementation(out, nl_langinfo(CODESET), iconvout, "UTF-16LE");
+	    //compare test and iconvout
+	    int i = 0;
+	    bool cmp = false;
+	    while(!(*(iconvout+i)=='\0'&&*(iconvout+i+1)=='\0'))
+	    {
+	      if(*(iconvout+i)==test[i])
+	      {
+		i++;
+		cmp = true;
+	      }
+	      //print result
+	      else 
+	      {
+		cmp = false;
+		break;
+	      }
+	    }
+	    if(cmp)
+	      cout<<"test==iconvout\n";
+	    else
+	      cout<<"test!=iconvout\n";
+	  }
 	  else
 	    cout<<"Could not find first free cluster. Is there a one?\n";
 	}
