@@ -196,7 +196,6 @@ void fatdino_upperCase(char *string);
  * src must be double zero terminated
  * returns 1 on success and -1 on fail
  */
-//TODO:
 int fatdino_ToUTF16(char *src, char *dst);
 
 
@@ -205,7 +204,6 @@ int fatdino_ToUTF16(char *src, char *dst);
  * src must be double zero terminated
  * returns 1 on success and -1 on fail
  */
-//TODO:
 int fatdino_FromUTF16(char *src, char *dst);
 
 /*
