@@ -492,12 +492,12 @@ int main(int argc, char **argv) {
 	    const char test[54] = {'R',0,'E',0,'A',0,'D',0,'M',0,'E',0,'.',0,'d',0,'i',0,'s',0,'k',0,'d',0,'e',0,'f',0,'i',0,'n',0,'e',0,'s',0,0,0,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
 	    char *out = new char[256];
 	    //UTF16->UTF8
-	    fatdino_iconvImplementation((char*)&test, "UTF-16LE", out, nl_langinfo(CODESET));
+	    fatdino_FromUTF16((char*)&test, out);
 	    //print out
 	    cout<<"README~1DIS: "<<out<<"\n";
 	    //UTF16<-UTF8
 	    char *iconvout = new char[256];
-	    fatdino_iconvImplementation(out, nl_langinfo(CODESET), iconvout, "UTF-16LE");
+	    fatdino_ToUTF16(out, iconvout);
 	    //compare test and iconvout
 	    int i = 0;
 	    bool cmp = false;

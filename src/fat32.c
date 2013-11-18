@@ -421,7 +421,6 @@ void fatdino_upperCase(char *string) {
 
 int fatdino_iconvImplementation(char *src, char *src_enc, char *dst, char *dst_enc)
 {
-//       setlocale( LC_ALL, "" );
       iconv_t cd;
       if((cd = iconv_open(dst_enc,src_enc)) == (iconv_t) - 1) {		//opening iconv
 	cd = NULL;
@@ -431,7 +430,7 @@ int fatdino_iconvImplementation(char *src, char *src_enc, char *dst, char *dst_e
       char *tmp = src;
       char * tmpo = dst;
       int i;
-      for(i = 0;i<256;i+=2) {
+      for(i = 0;i<256;i+=2) {						//finding src size
 	if((src[i] == '\0') && (src[i+1] == '\0')) {
 	  i+=2;
 	  break;
@@ -443,16 +442,17 @@ int fatdino_iconvImplementation(char *src, char *src_enc, char *dst, char *dst_e
       if(rc == (size_t) - 1 || errno!=0)
 	return -1;
       iconv_close(cd);
+      return 1;
 }
 
 int fatdino_ToUTF16(char *src, char *dst)
 {
-  //TODO
+  return fatdino_iconvImplementation(src, nl_langinfo(CODESET), dst, "UTF-16LE");
 }
 
 int fatdino_FromUTF16(char *src, char *dst)
 {
-  //TODO
+  return fatdino_iconvImplementation(src, "UTF-16LE", dst, nl_langinfo(CODESET));
 }
 
 int fatdino_getFSINFO(char *device, fatdino_BPB *bpb, fatdino_FSINFO *fsinfo) {
