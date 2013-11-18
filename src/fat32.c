@@ -145,28 +145,12 @@ int fatdino_getLFN(char *device, char *ustring, unsigned int *ustringSz, fatdino
       }
       while((((entry+1)->LDIR_Ord) & LAST_LONG_ENTRY) != 0x40);
       setlocale( LC_ALL, "" );
-      iconv_t cd;
-      if((cd = iconv_open(nl_langinfo(CODESET),"UTF-16LE")) == (iconv_t) - 1) {
-	cd = NULL;
+      int res = fatdino_FromUTF16(lfn, ustring);
+      if(res==-1)
 	return -1;
-      }
-      errno = 0;
-      tmp = lfn;
-      char * tmpo = ustring;
-      int i;
-      for(i = 0;i<lfnSz;i+=2) {
-	if((lfn[i] == '\0') && (lfn[i+1] == '\0')) {
-	  i+=2;
-	  break;
-	}
-      }
-      size_t sizei = i;
-      size_t sizeo = lfnSz;
-      size_t rc = iconv(cd, &tmp, &sizei, &tmpo, &sizeo);
-      if(rc == (size_t) - 1 || errno!=0)
-	return -1;
-      iconv_close(cd);
-      *ustringSz = lfnSz - sizeo;
+      char *ptr = NULL;
+      for(ptr=ustring;*ptr!='\0';ptr++);
+      *ustringSz = ptr - ustring + 1;
       ustring=realloc(ustring,*ustringSz);
       free(dir);
       return 1;

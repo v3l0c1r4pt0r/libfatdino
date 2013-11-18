@@ -211,7 +211,6 @@ int fatdino_FromUTF16(char *src, char *dst);
 /*
  * function that converts string from one encoding to another using iconv
  */
-//TODO:
 int fatdino_iconvImplementation(char *src, char *src_enc, char *dst, char *dst_enc);
 
 /*
