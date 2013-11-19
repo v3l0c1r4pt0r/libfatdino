@@ -101,12 +101,12 @@ uint32_t fatdino_getNextCluster(char *device, fatdino_BPB *bpb, uint32_t cluster
   } else return 0;
 }
 
-int fatdino_getCluster(char *device, fatdino_BPB *bpb, uint8_t *dir, uint32_t cluster) {
+int fatdino_getCluster(char *device, fatdino_BPB *bpb, uint8_t *buf, uint32_t cluster) {
   unsigned int offset = (bpb->BPB_RsvdSecCnt + (bpb->BPB_NumFATs * bpb->BPB_FATSz32) +
     (cluster-2) * bpb->BPB_SecPerClus) * 512;
   int fd = open(device, O_RDONLY);
   if(fd > 0 && lseek(fd,offset,SEEK_SET)==offset) {
-    if(read(fd, dir, 512 * bpb->BPB_SecPerClus) == -1) {
+    if(read(fd, buf, 512 * bpb->BPB_SecPerClus) == -1) {
       close(fd);
       return -1;
     }
@@ -466,16 +466,44 @@ int fatdino_getFSINFO(char *device, fatdino_BPB *bpb, fatdino_FSINFO *fsinfo) {
     return 1;
 }
 
+uint32_t fatdino_FatToCluster(fatdino_BPB *bpb, uint32_t fat, uint16_t offset)
+{
+  return (fat - bpb->BPB_RsvdSecCnt) * 512/sizeof(uint32_t) + offset;
+}
+
 uint32_t fatdino_findNextFree(char *device, fatdino_BPB *bpb, uint32_t start) {
-  uint32_t sector = fatdino_getFATSector(bpb, start);
+  //cluster number (start) => fat sector that holds the next cluster in chain (fatNum)
+  uint32_t fatNum = fatdino_getFATSector(bpb, start);
+  uint32_t *sector = NULL;
+  char *fat = malloc(512);
+  //int res = fatdino_getCluster(device, bpb, fat, fatNum);
   //dopoki nie sektor[i] == 0 lub sector >= firstrootsector
+  do
+  {
+    //load sector to memory
+    int fd = open(device, O_RDONLY);
+    if(fd > 0 && lseek(fd,fatNum,SEEK_SET)==fatNum) {
+      if(read(fd, fat, 512) == -1) {
+	close(fd);
+	return 0;
+      }
+      close(fd);
+    }
+    else
+      return 0;
     //dopoki nie sektor[i] == 0 lub i >= 512 / 4
-      //i++
-    //jesli sektor[i] != 0
-      //wczytaj nast sektor
-      //sector++
-  //return cluster = sector * (512 / 4) + i + 2
-  return 0;
+    unsigned int i = 0;
+    while(*(uint32_t*)(fat+i)!=0 && i<512)
+    {
+      i+=sizeof(uint32_t);
+    }
+    if(*(uint32_t*)(fat+i)==0)
+      return fatdino_FatToCluster(bpb, fatNum, i);
+    fatNum++;
+  }
+  while(fatNum<bpb->BPB_RootClus);
+  free(fat);
+  return fatNum;
 }
 /*
 

@@ -486,6 +486,7 @@ int main(int argc, char **argv) {
 	    firstfree = fatdino_findNextFree(argv[3], bpb, fsinfo->FSI_Nxt_Free);
 	  else
 	    firstfree = fatdino_findNextFree(argv[3], bpb, 2);
+	  cout<<"Pierwszy wolny sektor: "<<firstfree<<"\n";return 0;
 	  if(firstfree>1/*TMP*/||firstfree==0/*ENDTMP*/)
 	  {
 	    cout<<" too fast!\n";

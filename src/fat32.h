@@ -129,10 +129,10 @@ int fatdino_getBPB(char *device, fatdino_BPB *buffer);
 int fatdino_checkDev(char *device, fatdino_BPB *bpb);
 
 /*
-  function that read given cluster and returns at address pointed by dir,
+  function that reads given cluster and returns at address pointed by buf,
   returns 1 on success and -1 on fail
 */
-int fatdino_getCluster(char *device, fatdino_BPB *bpb, uint8_t *dir, uint32_t cluster);
+int fatdino_getCluster(char *device, fatdino_BPB *bpb, uint8_t *buf, uint32_t cluster);
 
 /*
   function that returns number of FAT sector with given cluster chain element,
@@ -212,6 +212,12 @@ int fatdino_FromUTF16(char *src, char *dst);
 int fatdino_iconvImplementation(char *src, char *src_enc, char *dst, char *dst_enc);
 
 /*
+ * function that computes cluster number basing on FAT sector and offset in that sector
+ */
+//TODO:
+uint32_t fatdino_FatToCluster(fatdino_BPB *bpb, uint32_t fat, uint16_t offset);
+
+/*
   function that decides if name given as UTF-16 could be written as SFN only
   and returns SFN and if neccessary LFN created from given name,
   returns 0 if only SFN created, 1 if LFN created too and -1 on fail
@@ -220,7 +226,7 @@ int fatdino_iconvImplementation(char *src, char *src_enc, char *dst, char *dst_e
 int fatdino_nameToSfnAndLfn(char *name, char *sfn, char *lfn);
 
 /*
-  function that finds next free cluster, returns cluster number or 0 on error
+  function that finds next free cluster, starting on cluster start, returns cluster number or 0 on error
 */
 //TODO:TODO:TODO:TODO:TODO:TODO:TODO
 uint32_t fatdino_findNextFree(char *device, fatdino_BPB *bpb, uint32_t start);
