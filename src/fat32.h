@@ -214,53 +214,52 @@ int fatdino_iconvImplementation(char *src, char *src_enc, char *dst, char *dst_e
 /*
  * function that computes cluster number basing on FAT sector and offset in that sector
  */
-//TODO:
 uint32_t fatdino_FatToCluster(fatdino_BPB *bpb, uint32_t fat, uint16_t offset);
 
 /*
-  function that decides if name given as UTF-16 could be written as SFN only
-  and returns SFN and if neccessary LFN created from given name,
-  returns 0 if only SFN created, 1 if LFN created too and -1 on fail
-*/
+ * function that decides if name given as UTF-16 could be written as SFN only
+ * and returns SFN and if neccessary LFN created from given name,
+ * returns 0 if only SFN created, 1 if LFN created too and -1 on fail
+ */
 //TODO:
 int fatdino_nameToSfnAndLfn(char *name, char *sfn, char *lfn);
 
 /*
-  function that finds next free cluster, starting on cluster start, returns cluster number or 0 on error
-*/
+ * function that finds next free cluster, starting on cluster start, returns cluster number or 0 on error
+ */
 //TODO: find clusters freed after file/dir deletion (maybe in other function?)
 uint32_t fatdino_findNextFree(char *device, fatdino_BPB *bpb, uint32_t start);
 
 /*
-  function that gets FSINFO structure sector from disk,
-  returns 0 on success, -1 on fail and 1 on fsinfo damaged
-*/
+ * function that gets FSINFO structure sector from disk,
+ * returns 0 on success, -1 on fail and 1 on fsinfo damaged
+ */
 int fatdino_getFSINFO(char *device, fatdino_BPB *bpb, fatdino_FSINFO *fsinfo);
 
 /*
-  function that creates empty directory at given cluster
-  and zeroes rest of the cluster, returns 0 on success and 1 on fail
-*/
+ * function that creates empty directory at given cluster
+ * and zeroes rest of the cluster, returns 0 on success and 1 on fail
+ */
 //TODO:
 int fatdino_createDir(char *device, fatdino_BPB *bpb, uint32_t cluster);
 
 /*
-  function that adds entry to the existing directory,
-  if neccessary follow cluster chain or adds new cluster to it
-  returns 0 on success and 1 on fail
-*/
+ * function that adds entry to the existing directory,
+ * if neccessary follow cluster chain or adds new cluster to it
+ * returns 0 on success and 1 on fail
+ */
 //TODO:
 int fatdino_addDirEntry(char *device, fatdino_BPB *bpb, uint32_t cluster, char *targetname, uint32_t targetclus, uint8_t targetattr, uint8_t targetsize);
 
 /*
-  function that creates LDIR structure chain for lfn given,
-  results num of structures created
-*/
+ * function that creates LDIR structure chain for lfn given,
+ * results num of structures created
+ */
 //TODO:
 uint8_t fatdino_createLDIR(char *lfn, char *buffer);
 
 /*
-  function that creates DIR structure and fills 32-byte buffer
-*/
+ * function that creates DIR structure and fills 32-byte buffer
+ */
 //TODO:
 void fatdino_createDIR(char *sfn, char *buffer, uint32_t cluster, uint8_t attr, uint32_t filesize);
