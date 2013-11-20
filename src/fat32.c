@@ -480,10 +480,10 @@ uint32_t fatdino_findNextFree(char *device, fatdino_BPB *bpb, uint32_t start) {
   //dopoki nie sektor[i] == 0 lub sector >= firstrootsector
   do
   {
+    unsigned int i = (unsigned int)(sizeof(uint32_t) * (start % (512/sizeof(uint32_t))));
     //load sector to memory
     int fd = open(device, O_RDONLY);
-    unsigned int i = start % (512/sizeof(uint32_t));//czemu 8 mod 128 = 512 ???TODO
-    if(fd > 0 && lseek(fd,fatNum,SEEK_SET)==fatNum) {
+    if(fd > 0 && lseek(fd,fatNum*512,SEEK_SET)==fatNum*512) {
       if(read(fd, fat, 512) == -1) {
 	close(fd);
 	return 0;
@@ -498,7 +498,7 @@ uint32_t fatdino_findNextFree(char *device, fatdino_BPB *bpb, uint32_t start) {
       i+=sizeof(uint32_t);
     }
     if(*(uint32_t*)(fat+i)==0)
-      return fatdino_FatToCluster(bpb, fatNum, i);
+      return fatdino_FatToCluster(bpb, fatNum, i/sizeof(uint32_t));
     i = 0;
     fatNum++;
   }

@@ -228,7 +228,7 @@ int fatdino_nameToSfnAndLfn(char *name, char *sfn, char *lfn);
 /*
   function that finds next free cluster, starting on cluster start, returns cluster number or 0 on error
 */
-//TODO:TODO:TODO:TODO:TODO:TODO:TODO
+//TODO: find clusters freed after file/dir deletion (maybe in other function?)
 uint32_t fatdino_findNextFree(char *device, fatdino_BPB *bpb, uint32_t start);
 
 /*
