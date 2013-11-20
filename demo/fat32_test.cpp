@@ -486,40 +486,40 @@ int main(int argc, char **argv) {
 	    firstfree = fatdino_findNextFree(argv[3], bpb, fsinfo->FSI_Nxt_Free);
 	  else
 	    firstfree = fatdino_findNextFree(argv[3], bpb, 2);
-	  cout<<"Pierwszy wolny sektor: "<<firstfree<<"\n";return 0;
-	  if(firstfree>1/*TMP*/||firstfree==0/*ENDTMP*/)
+	  cout<<"Pierwszy wolny sektor: "<<firstfree<<"\n";
+	  if(firstfree>1)
 	  {
 	    cout<<" too fast!\n";
-	    const char test[54] = {'R',0,'E',0,'A',0,'D',0,'M',0,'E',0,'.',0,'d',0,'i',0,'s',0,'k',0,'d',0,'e',0,'f',0,'i',0,'n',0,'e',0,'s',0,0,0,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
+	    char test[54] = {'R',0,'E',0,'A',0,'D',0,'M',0,'E',0,'.',0,'d',0,'i',0,'s',0,'k',0,'d',0,'e',0,'f',0,'i',0,'n',0,'e',0,'s',0,0,0,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
 	    char *out = new char[256];
 	    //UTF16->UTF8
 	    fatdino_FromUTF16((char*)&test, out);
 	    //print out
 	    cout<<"README~1DIS: "<<out<<"\n";
+	    //test SFN and LFN generation
+	    char *sfn = new char[12];
+	    char *lfn = new char[256];
+	    int res = fatdino_nameToSfnAndLfn(test, sfn, lfn);
+	    if(res==1)
+	    {
+	      //lfn+sfn
+	      cout<<"SFN: "<<sfn<<"\n";
+	      char *ulfn = new char[256];
+	      fatdino_FromUTF16(lfn, ulfn);
+	      cout<<"LFN: "<<ulfn<<"\n";
+	    }
+	    else if(res==0)
+	    {
+	      //sfn
+	      cout<<"SFN: "<<sfn<<"\n";
+	    }
+	    else
+	    {
+	      cout<<argv[0]<<": error converting to LFN/SFN\n";
+	    }
 	    //UTF16<-UTF8
 	    char *iconvout = new char[256];
 	    fatdino_ToUTF16(out, iconvout);
-	    //compare test and iconvout
-	    int i = 0;
-	    bool cmp = false;
-	    while(!(*(iconvout+i)=='\0'&&*(iconvout+i+1)=='\0'))
-	    {
-	      if(*(iconvout+i)==test[i])
-	      {
-		i++;
-		cmp = true;
-	      }
-	      //print result
-	      else 
-	      {
-		cmp = false;
-		break;
-	      }
-	    }
-	    if(cmp)
-	      cout<<"test==iconvout\n";
-	    else
-	      cout<<"test!=iconvout\n";
 	  }
 	  else
 	    cout<<"Could not find first free cluster. Is there a one?\n";

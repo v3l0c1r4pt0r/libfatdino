@@ -506,6 +506,11 @@ uint32_t fatdino_findNextFree(char *device, fatdino_BPB *bpb, uint32_t start) {
   free(fat);
   return fatNum;
 }
+
+int fatdino_nameToSfnAndLfn(char *name, char *sfn, char *lfn)
+{
+  return -1;
+}
 /*
 
 */
