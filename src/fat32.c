@@ -509,6 +509,51 @@ uint32_t fatdino_findNextFree(char *device, fatdino_BPB *bpb, uint32_t start) {
 
 int fatdino_nameToSfnAndLfn(char *name, char *sfn, char *lfn)
 {
+  //find end of name string
+  char *dbnull = name;
+  uint8_t indicator = 0;
+  while(*dbnull!='\0' || *(dbnull+1)!='\0')
+  {
+    dbnull+=2;
+  }
+  //copy name to buf, check if i+1 is zero and convert to uppercase
+  char *buf = malloc((dbnull-name)/2);
+  unsigned int i = 0;
+  for(i = 0; i < dbnull-name; i+=2)
+  {
+    *(buf+i) = *(name+i);
+    //convert letters to uppercase
+    if(*(name+i)>'a' && *(name+i)<'z')
+    {
+      indicator|=IND_LOWERCASE;
+      //turn off 5th bit
+      *(buf+i)=*(buf+i)&!32;
+    }
+    else if(*(name+i)>'A' && *(name+i)<'Z')
+    {
+      indicator|=IND_UPPERCASE;
+    }
+    else if((*(name+i)>'0' && *(name+i)<'9') /*|| jest dozwolonym znakiem specjalnym*/)
+    if(*(name+i+1)!='\0' || (*(name+i)<'\127' && !(
+      (*(name+i)>'A'&&*(name+i)<'Z') ||
+      0
+    )))
+    {
+      indicator|=IND_INVALIDCHAR;
+      *(buf+i) = '_';
+    }
+  }
+  //find last dot
+  char *dot = dbnull-2;
+  while(!(*dot=='.' && *(dot+1)=='\0') && dot>name)
+  {
+    dot-=2;
+  }
+  if(dot==name)
+    indicator|=IND_NODOT;
+  if(dbnull-dot>4*2||dot-name>8*2/*||(!name.upperCase.isIn("QWERTYUIOPASDFGHJKLZXCVBNM1234567890$%'-_@~`!(){}^#&")&&kazdyinnychar>127)*/)
+  {
+  }
   return -1;
 }
 /*

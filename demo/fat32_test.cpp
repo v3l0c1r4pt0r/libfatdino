@@ -497,7 +497,7 @@ int main(int argc, char **argv) {
 	    //print out
 	    cout<<"README~1DIS: "<<out<<"\n";
 	    //test SFN and LFN generation
-	    char *sfn = new char[12];
+	    char *sfn = new char[13];
 	    char *lfn = new char[256];
 	    int res = fatdino_nameToSfnAndLfn(test, sfn, lfn);
 	    if(res==1)
