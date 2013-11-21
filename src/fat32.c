@@ -667,15 +667,20 @@ uint8_t fatdino_createLDIR(char *lfn, uint8_t *** buff)
     res++;
   buffer = malloc(res*sizeof(void*));
   fatdino_LDIR *ldir;
+  char *end = lfn+i;
   for(i = 0;i<res;i++)
   {
     buffer[i] = malloc(sizeof(fatdino_LDIR));
     ldir = (fatdino_LDIR*)buffer[i];
     memset(ldir,0,32);
     ldir->LDIR_Ord = i+1;
+    ldir->LDIR_Attr = ATTR_LONG_NAME;
+    memcpy(ldir->LDIR_Name1, lfn+(26*i),10);
+    memcpy(ldir->LDIR_Name2, lfn+(26*i)+10,12);
+    memcpy(ldir->LDIR_Name3, lfn+(26*i)+22,4);
+    //TODO: checksum?
   }
   ldir->LDIR_Ord |= LAST_LONG_ENTRY;
-  //TODO
   *buff = buffer;
   return res;
 }

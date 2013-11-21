@@ -227,10 +227,12 @@ uint32_t fatdino_FatToCluster(fatdino_BPB *bpb, uint32_t fat, uint16_t offset);
 #define IND_LFNREQ	0x80
 
 /*
- * function that decides if name given as UTF-16 could be written as SFN only
+ * function that decides if name given as UTF-16 (lfn) could be written as SFN only
  * and returns SFN and NTRes byte,
+ * NOTE: lfn should be multiple of 26 (single LDIR struct capacity)
  * returns 0 if only SFN is neccessary, 1 if LFN required too and -1 on fail
  */
+//TODO: modify func so it will fill bytes after double-null with 0xff
 int fatdino_nameToSfnAndLfn(char *lfn, char *sfn, uint8_t *ntres);
 
 /*
@@ -266,11 +268,10 @@ int fatdino_createDir(char *device, fatdino_BPB *bpb, uint32_t cluster);
 int fatdino_addDirEntry(char *device, fatdino_BPB *bpb, uint32_t cluster, char *buffer);
 
 /*
- * function that creates in buffer LDIR structure chain for lfn given,
+ * function that creates in buffer LDIR structure array for lfn given,
  * buffer should not be allocated
  * returns num of structures created
  */
-//TODO:
 uint8_t fatdino_createLDIR(char *lfn, uint8_t *** buffer);
 
 /*
