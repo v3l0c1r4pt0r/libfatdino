@@ -259,18 +259,19 @@ int fatdino_createDir(char *device, fatdino_BPB *bpb, uint32_t cluster);
 
 /*
  * function that adds entry to the existing directory,
- * if neccessary follow cluster chain or adds new cluster to it
+ * if neccessary follows cluster chain or adds new cluster to it
  * returns 0 on success and 1 on fail
  */
 //TODO:
-int fatdino_addDirEntry(char *device, fatdino_BPB *bpb, uint32_t cluster, char *targetname, uint32_t targetclus, uint8_t targetattr, uint8_t targetsize);
+int fatdino_addDirEntry(char *device, fatdino_BPB *bpb, uint32_t cluster, char *buffer);
 
 /*
  * function that creates in buffer LDIR structure chain for lfn given,
- * results num of structures created
+ * buffer should not be allocated
+ * returns num of structures created
  */
 //TODO:
-uint8_t fatdino_createLDIR(char *lfn, char *buffer);
+uint8_t fatdino_createLDIR(char *lfn, uint8_t *** buffer);
 
 /*
  * function that creates DIR structure and fills 32-byte buffer

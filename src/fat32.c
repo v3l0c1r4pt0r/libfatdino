@@ -656,6 +656,29 @@ int fatdino_createDir(char *device, fatdino_BPB *bpb, uint32_t cluster)
   free(dirup);
   return 1;
 }
+
+uint8_t fatdino_createLDIR(char *lfn, uint8_t *** buff)
+{
+  uint8_t ** buffer;
+  uint8_t i;
+  for(i = 0; lfn[i]!='\0' || lfn[i]!='\0'; i+=2);
+  unsigned int res = i/26;
+  if(i%26!=0)
+    res++;
+  buffer = malloc(res*sizeof(void*));
+  fatdino_LDIR *ldir;
+  for(i = 0;i<res;i++)
+  {
+    buffer[i] = malloc(sizeof(fatdino_LDIR));
+    ldir = (fatdino_LDIR*)buffer[i];
+    memset(ldir,0,32);
+    ldir->LDIR_Ord = i+1;
+  }
+  ldir->LDIR_Ord |= LAST_LONG_ENTRY;
+  //TODO
+  *buff = buffer;
+  return res;
+}
 /*
 
 */
