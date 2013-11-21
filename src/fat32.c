@@ -519,7 +519,7 @@ int fatdino_nameToSfnAndLfn(char *lfn, char *sfn, uint8_t *ntres)
   //copy lfn to buf, check if i+1 is zero and convert to uppercase
   char *buf = malloc((dbnull-lfn)/2);
   unsigned int i = 0;
-  for(i = (dbnull-lfn)-2; i >= 0; i-=2)
+  for(i = (dbnull-lfn)-2; i < (dbnull-lfn); i-=2)
   {
     *(buf+i/2) = *(lfn+i);
     if(*(lfn+i+1)!='\0')
@@ -586,7 +586,20 @@ int fatdino_nameToSfnAndLfn(char *lfn, char *sfn, uint8_t *ntres)
   //if name is lowercase set ntres
   else if((indicator&IND_LOWERCASE)!=0)
     *ntres|=(NTRES_FNLOWER|NTRES_EXTLOWER);
-  return -1;
+  //create sfn
+  if((indicator&IND_LFNREQ)==0)
+    strncpy(sfn,buf,8);
+  else
+  {
+    strncpy(sfn,buf,6);
+    sfn[6]='~';
+    sfn[7]='1';
+  }
+  strncpy(sfn+8,dot+1,3);
+  if((indicator&IND_LFNREQ)==0)
+    return 0;
+  else
+    return 1;
 }
 /*
 
