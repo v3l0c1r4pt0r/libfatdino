@@ -601,6 +601,21 @@ int fatdino_nameToSfnAndLfn(char *lfn, char *sfn, uint8_t *ntres)
   else
     return 1;
 }
+
+void fatdino_createDIR(char *sfn, char *buffer, uint32_t cluster, uint8_t attr, uint32_t filesize, uint8_t ntres)
+{
+  fatdino_DIR *buf = (fatdino_DIR*)buffer;
+  memset(buf->DIR_Name,0x20,11);
+  strncpy(buf->DIR_Name,sfn,11);
+  buf->DIR_Attr = attr;
+  buf->DIR_NTRes = ntres;
+  //creation date/time
+  //TODO:last access time
+  //wrt date/time
+  buf->DIR_FstClusHI = cluster>>16;
+  buf->DIR_FstClusLO = cluster&0xffff;
+  buf->DIR_FileSize = filesize;
+}
 /*
 
 */

@@ -262,7 +262,7 @@ int fatdino_createDir(char *device, fatdino_BPB *bpb, uint32_t cluster);
 int fatdino_addDirEntry(char *device, fatdino_BPB *bpb, uint32_t cluster, char *targetname, uint32_t targetclus, uint8_t targetattr, uint8_t targetsize);
 
 /*
- * function that creates LDIR structure chain for lfn given,
+ * function that creates in buffer LDIR structure chain for lfn given,
  * results num of structures created
  */
 //TODO:
@@ -271,5 +271,5 @@ uint8_t fatdino_createLDIR(char *lfn, char *buffer);
 /*
  * function that creates DIR structure and fills 32-byte buffer
  */
-//TODO:
-void fatdino_createDIR(char *sfn, char *buffer, uint32_t cluster, uint8_t attr, uint32_t filesize);
+//TODO:creation & write date/time, last access time
+void fatdino_createDIR(char *sfn, char *buffer, uint32_t cluster, uint8_t attr, uint32_t filesize, uint8_t ntres);
