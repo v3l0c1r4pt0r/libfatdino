@@ -109,82 +109,82 @@ typedef struct __attribute__((__packed__)) fatdino_fsinfo {
 char *fatdino_bytesToHuman(unsigned int bytes);
 
 /*
-  function that converts fatdino_DIR's date format into human-readable form,
-  given string must be allocated and must be at least 20 bytes long when no ns given
-  and at least 24 bytes when ns>0, 
-  date format: 'dd-mm-yyyy hh:mm:ss.n',
-  return 0 on succes, -1 on fail
-*/
+ * function that converts fatdino_DIR's date format into human-readable form,
+ * given string must be allocated and must be at least 20 bytes long when no ns given
+ * and at least 24 bytes when ns>0, 
+ * date format: 'dd-mm-yyyy hh:mm:ss.n',
+ * return 0 on succes, -1 on fail
+ */
 int fatdino_dateToHuman(char *string, uint16_t Date, uint16_t Time, uint8_t TimeTenth);
 /*
-  function that fills buffer with a BPB/BS structure of given FAT32 device,
-  returns 0 on success and -1 on fail
-*/
+ * function that fills buffer with a BPB/BS structure of given FAT32 device,
+ * returns 0 on success and -1 on fail
+ */
 int fatdino_getBPB(char *device, fatdino_BPB *buffer);
 
 /*
-  function to check if given device is FAT32-formatted,
-  if so returns 1, else 0, on error: -1
-*/
+ * function to check if given device is FAT32-formatted,
+ * if so returns 1, else 0, on error: -1
+ */
 int fatdino_checkDev(char *device, fatdino_BPB *bpb);
 
 /*
-  function that reads given cluster and returns at address pointed by buf,
-  returns 1 on success and -1 on fail
-*/
+ * function that reads given cluster and returns at address pointed by buf,
+ * returns 1 on success and -1 on fail
+ */
 int fatdino_getCluster(char *device, fatdino_BPB *bpb, uint8_t *buf, uint32_t cluster);
 
 /*
-  function that returns number of FAT sector with given cluster chain element,
-  returns sector number if valid bpb given, otherwise result is undefined
-*/
+ * function that returns number of FAT sector with given cluster chain element,
+ * returns sector number if valid bpb given, otherwise result is undefined
+ */
 uint32_t fatdino_getFATSector(fatdino_BPB *bpb, uint32_t cluster);
 
 /*
-  functions that finds next cluster in cluster chain of given cluster number,
-  returns 0 on fail, cluster number on success
-*/
+ * functions that finds next cluster in cluster chain of given cluster number,
+ * returns 0 on fail, cluster number on success
+ */
 uint32_t fatdino_getNextCluster(char *device, fatdino_BPB *bpb, uint32_t cluster);
 
 /*
-  function that searches for entry in given directory cluster,
-  modifies cluster if entry found in another cluster
-  returns offset to matching directory entry 
-  or (uint32_t)-1 when not found or error
-*/
+ * function that searches for entry in given directory cluster,
+ * modifies cluster if entry found in another cluster
+ * returns offset to matching directory entry 
+ * or (uint32_t)-1 when not found or error
+ */
 uint32_t fatdino_findEntry(char *device, fatdino_BPB *bpb, uint32_t *cluster, char *entry, short followChain);
 
 /*
-  function that gets unicode long file name of entry in dir struct array
-  pointed by offset, returns 1 if LDIR found, 0 if not and -1 on fail
-*/
+ * function that gets unicode long file name of entry in dir struct array
+ * pointed by offset, returns 1 if LDIR found, 0 if not and -1 on fail
+ */
 int fatdino_getLFN(char *device, char *ustring, unsigned int *ustringSz, fatdino_BPB *bpb, uint32_t cluster, uint16_t offset);
 
 /*
-  function that converts 8.3 filename to readable form
-*/
+ * function that converts 8.3 filename to readable form
+ */
 char *fatdino_SfnToHuman(char *shortname, uint8_t NTRes);
 
 /*
-  function that returns size of file/dir at given path or 0 at error
-*/
+ * function that returns size of file/dir at given path or 0 at error
+ */
 unsigned int fatdino_getSize(char *device, fatdino_BPB *bpb, char *fpath);
 
 /*
-  function that returns cluster number of file/dir at given path,
-  0 on not found or 1 on another error
-*/
+ * function that returns cluster number of file/dir at given path,
+ * 0 on not found or 1 on another error
+ */
 unsigned int fatdino_getClusterNumber(char *device, fatdino_BPB *bpb, char *fpath);
 
 /*
-  function that gets DIR structure (if pointer is not NULL),
-  number of containing cluster and struct offset,
-  on error returns 1, on success - 0
-*/
+ * function that gets DIR structure (if pointer is not NULL),
+ * number of containing cluster and struct offset,
+ * on error returns 1, on success - 0
+ */
 int fatdino_getDir(char *device, fatdino_BPB *bpb, char *fpath, fatdino_DIR *dirstruct, unsigned int *cluster, unsigned int *offset);
 /*
-  function that transforms string to uppercase
-*/
+ * function that transforms string to uppercase
+ */
 void fatdino_upperCase(char *string);
 
 /*
