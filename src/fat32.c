@@ -519,28 +519,47 @@ int fatdino_nameToSfnAndLfn(char *name, char *sfn, char *lfn)
   //copy name to buf, check if i+1 is zero and convert to uppercase
   char *buf = malloc((dbnull-name)/2);
   unsigned int i = 0;
-  for(i = 0; i < dbnull-name; i+=2)
+  for(i = 0; i < (dbnull-name); i+=2)
   {
-    *(buf+i) = *(name+i);
+    *(buf+i/2) = *(name+i);
+    if(*(name+i+1)!='\0')
+    {
+      //not an ascii char
+      indicator|=IND_INVALIDCHAR;
+      *(buf+i/2) = '_';
+    }
     //convert letters to uppercase
-    if(*(name+i)>'a' && *(name+i)<'z')
+    else if(*(name+i)>='a' && *(name+i)<='z')
     {
       indicator|=IND_LOWERCASE;
       //turn off 5th bit
-      *(buf+i)=*(buf+i)&!32;
+      *(buf+i/2)=*(buf+i/2)&~32;
     }
-    else if(*(name+i)>'A' && *(name+i)<'Z')
+    else if(*(name+i)>='A' && *(name+i)<='Z')
     {
       indicator|=IND_UPPERCASE;
     }
-    else if((*(name+i)>'0' && *(name+i)<'9') /*|| jest dozwolonym znakiem specjalnym*/)
-    if(*(name+i+1)!='\0' || (*(name+i)<'\127' && !(
-      (*(name+i)>'A'&&*(name+i)<'Z') ||
-      0
-    )))
+    else if(
+      (*(name+i)>'0' && *(name+i)<'9') || //QWERTYUIOPASDFGHJKLZXCVBNM1234567890$%'-_@~`!(){}^#&
+      *(name+i)=='$' || *(name+i)=='%' || *(name+i)=='\'' || *(name+i)=='-' || *(name+i)=='_' || 
+      *(name+i)=='@' || *(name+i)=='~' || *(name+i)=='`'  || *(name+i)=='!' || *(name+i)=='(' || 
+      *(name+i)==')' || *(name+i)=='{' || *(name+i)=='}'  || *(name+i)=='^' || *(name+i)=='#' || 
+      *(name+i)=='&' || *(name+i)>'\127'
+    )
     {
-      indicator|=IND_INVALIDCHAR;
-      *(buf+i) = '_';
+      //allowed special char, do nothing
+    }
+    else
+    {
+      //there is only one dot allowed
+      if(*(name+i)=='.' && ((indicator & IND_DOT) == 0))
+	indicator|=IND_DOT;
+      else
+      {
+	//specialchar not allowed
+	indicator|=IND_INVALIDCHAR;
+	*(buf+i/2) = '_';
+      }
     }
   }
   //find last dot
@@ -551,8 +570,9 @@ int fatdino_nameToSfnAndLfn(char *name, char *sfn, char *lfn)
   }
   if(dot==name)
     indicator|=IND_NODOT;
-  if(dbnull-dot>4*2||dot-name>8*2/*||(!name.upperCase.isIn("QWERTYUIOPASDFGHJKLZXCVBNM1234567890$%'-_@~`!(){}^#&")&&kazdyinnychar>127)*/)
+  if(dbnull-dot>4*2||dot-name>8*2)
   {
+    indicator|=IND_TOOLONG;
   }
   return -1;
 }

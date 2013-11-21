@@ -216,10 +216,14 @@ int fatdino_iconvImplementation(char *src, char *src_enc, char *dst, char *dst_e
  */
 uint32_t fatdino_FatToCluster(fatdino_BPB *bpb, uint32_t fat, uint16_t offset);
 
-#define IND_INVALIDCHAR	1;
-#define IND_LOWERCASE	2;
-#define IND_UPPERCASE	3;
-#define IND_NODOT		4;
+#define IND_INVALIDCHAR	0x01
+#define IND_LOWERCASE	0x02
+#define IND_UPPERCASE	0x04
+#define IND_NODOT	0x08
+#define IND_TOOLONG	0x10
+#define IND_DOT		0x20
+
+#define IND_LFNREQ	0x80
 
 /*
  * function that decides if name given as UTF-16 could be written as SFN only
