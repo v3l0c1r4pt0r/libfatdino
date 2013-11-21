@@ -507,44 +507,44 @@ uint32_t fatdino_findNextFree(char *device, fatdino_BPB *bpb, uint32_t start) {
   return fatNum;
 }
 
-int fatdino_nameToSfnAndLfn(char *name, char *sfn, char *lfn)
+int fatdino_nameToSfnAndLfn(char *lfn, char *sfn, uint8_t *ntres)
 {
-  //find end of name string
-  char *dbnull = name;
+  //find end of lfn string
+  char *dbnull = lfn;
   uint8_t indicator = 0;
   while(*dbnull!='\0' || *(dbnull+1)!='\0')
   {
     dbnull+=2;
   }
-  //copy name to buf, check if i+1 is zero and convert to uppercase
-  char *buf = malloc((dbnull-name)/2);
+  //copy lfn to buf, check if i+1 is zero and convert to uppercase
+  char *buf = malloc((dbnull-lfn)/2);
   unsigned int i = 0;
-  for(i = 0; i < (dbnull-name); i+=2)
+  for(i = (dbnull-lfn)-2; i >= 0; i-=2)
   {
-    *(buf+i/2) = *(name+i);
-    if(*(name+i+1)!='\0')
+    *(buf+i/2) = *(lfn+i);
+    if(*(lfn+i+1)!='\0')
     {
       //not an ascii char
       indicator|=IND_INVALIDCHAR;
       *(buf+i/2) = '_';
     }
     //convert letters to uppercase
-    else if(*(name+i)>='a' && *(name+i)<='z')
+    else if(*(lfn+i)>='a' && *(lfn+i)<='z')
     {
       indicator|=IND_LOWERCASE;
       //turn off 5th bit
       *(buf+i/2)=*(buf+i/2)&~32;
     }
-    else if(*(name+i)>='A' && *(name+i)<='Z')
+    else if(*(lfn+i)>='A' && *(lfn+i)<='Z')
     {
       indicator|=IND_UPPERCASE;
     }
     else if(
-      (*(name+i)>'0' && *(name+i)<'9') || //QWERTYUIOPASDFGHJKLZXCVBNM1234567890$%'-_@~`!(){}^#&
-      *(name+i)=='$' || *(name+i)=='%' || *(name+i)=='\'' || *(name+i)=='-' || *(name+i)=='_' || 
-      *(name+i)=='@' || *(name+i)=='~' || *(name+i)=='`'  || *(name+i)=='!' || *(name+i)=='(' || 
-      *(name+i)==')' || *(name+i)=='{' || *(name+i)=='}'  || *(name+i)=='^' || *(name+i)=='#' || 
-      *(name+i)=='&' || *(name+i)>'\127'
+      (*(lfn+i)>'0' && *(lfn+i)<'9') || //QWERTYUIOPASDFGHJKLZXCVBNM1234567890$%'-_@~`!(){}^#&
+      *(lfn+i)=='$' || *(lfn+i)=='%' || *(lfn+i)=='\'' || *(lfn+i)=='-' || *(lfn+i)=='_' || 
+      *(lfn+i)=='@' || *(lfn+i)=='~' || *(lfn+i)=='`'  || *(lfn+i)=='!' || *(lfn+i)=='(' || 
+      *(lfn+i)==')' || *(lfn+i)=='{' || *(lfn+i)=='}'  || *(lfn+i)=='^' || *(lfn+i)=='#' || 
+      *(lfn+i)=='&' || *(lfn+i)>'\127'
     )
     {
       //allowed special char, do nothing
@@ -552,7 +552,7 @@ int fatdino_nameToSfnAndLfn(char *name, char *sfn, char *lfn)
     else
     {
       //there is only one dot allowed
-      if(*(name+i)=='.' && ((indicator & IND_DOT) == 0))
+      if(*(lfn+i)=='.' && ((indicator & IND_DOT) == 0))
 	indicator|=IND_DOT;
       else
       {
@@ -564,16 +564,28 @@ int fatdino_nameToSfnAndLfn(char *name, char *sfn, char *lfn)
   }
   //find last dot
   char *dot = dbnull-2;
-  while(!(*dot=='.' && *(dot+1)=='\0') && dot>name)
+  while(!(*dot=='.' && *(dot+1)=='\0') && dot>lfn)
   {
     dot-=2;
   }
-  if(dot==name)
+  if(dot==lfn)
     indicator|=IND_NODOT;
-  if(dbnull-dot>4*2||dot-name>8*2)
+  if(dbnull-dot>4*2||dot-lfn>8*2)
   {
     indicator|=IND_TOOLONG;
   }
+  dot = buf + ((dot-lfn)/2);
+  //check if lfn is required
+  if(
+    (indicator&IND_INVALIDCHAR) != 0 || 
+    (indicator&IND_NODOT) != 0 || 
+    (indicator&IND_TOOLONG) != 0 ||
+    ((indicator&IND_UPPERCASE)!=0 && (indicator&IND_LOWERCASE)!=0)
+  )
+    indicator|=IND_LFNREQ;
+  //if name is lowercase set ntres
+  else if((indicator&IND_LOWERCASE)!=0)
+    *ntres|=(NTRES_FNLOWER|NTRES_EXTLOWER);
   return -1;
 }
 /*

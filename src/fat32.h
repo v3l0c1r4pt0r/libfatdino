@@ -61,7 +61,7 @@ typedef struct __attribute__((__packed__)) fatdino_bootsector {
 typedef struct __attribute__((__packed__)) fatdino_direntry {
   uint8_t	DIR_Name[11];
   uint8_t	DIR_Attr;
-  uint8_t	DIR_NTRes;	/* 0x00 -> lfn, uppercase;
+  uint8_t	DIR_NTRes;	/* 0x00 -> lfn || uppercase;
 				 * 0x08 -> name lowercase;
 				 * 0x10 -> ext lowercase;
 				 * NOTE: there is no option for 3rd bit to 
@@ -227,11 +227,11 @@ uint32_t fatdino_FatToCluster(fatdino_BPB *bpb, uint32_t fat, uint16_t offset);
 
 /*
  * function that decides if name given as UTF-16 could be written as SFN only
- * and returns SFN and if neccessary LFN created from given name,
- * returns 0 if only SFN created, 1 if LFN created too and -1 on fail
+ * and returns SFN and NTRes byte,
+ * returns 0 if only SFN is neccessary, 1 if LFN required too and -1 on fail
  */
 //TODO:
-int fatdino_nameToSfnAndLfn(char *name, char *sfn, char *lfn);
+int fatdino_nameToSfnAndLfn(char *lfn, char *sfn, uint8_t *ntres);
 
 /*
  * function that finds next free cluster, starting on cluster start, returns cluster number or 0 on error

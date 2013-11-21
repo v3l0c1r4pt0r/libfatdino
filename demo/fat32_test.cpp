@@ -498,14 +498,14 @@ int main(int argc, char **argv) {
 	    cout<<"README~1DIS: "<<out<<"\n";
 	    //test SFN and LFN generation
 	    char *sfn = new char[13];
-	    char *lfn = new char[256];
-	    int res = fatdino_nameToSfnAndLfn(test, sfn, lfn);
+	    uint8_t ntres = 0;
+	    int res = fatdino_nameToSfnAndLfn(test, sfn, &ntres);
 	    if(res==1)
 	    {
 	      //lfn+sfn
 	      cout<<"SFN: "<<sfn<<"\n";
 	      char *ulfn = new char[256];
-	      fatdino_FromUTF16(lfn, ulfn);
+	      fatdino_FromUTF16(test, ulfn);
 	      cout<<"LFN: "<<ulfn<<"\n";
 	    }
 	    else if(res==0)
