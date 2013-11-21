@@ -605,7 +605,7 @@ int fatdino_nameToSfnAndLfn(char *lfn, char *sfn, uint8_t *ntres)
 void fatdino_createDIR(char *sfn, char *buffer, uint32_t cluster, uint8_t attr, uint32_t filesize, uint8_t ntres)
 {
   fatdino_DIR *buf = (fatdino_DIR*)buffer;
-  memset(buf->DIR_Name,0x20,11);
+  //memset(buf->DIR_Name,0x20,11);
   strncpy(buf->DIR_Name,sfn,11);
   buf->DIR_Attr = attr;
   buf->DIR_NTRes = ntres;
@@ -615,6 +615,36 @@ void fatdino_createDIR(char *sfn, char *buffer, uint32_t cluster, uint8_t attr, 
   buf->DIR_FstClusHI = cluster>>16;
   buf->DIR_FstClusLO = cluster&0xffff;
   buf->DIR_FileSize = filesize;
+}
+
+int fatdino_createDir(char *device, fatdino_BPB *bpb, uint32_t cluster)
+{
+  //current dir entry (.)
+  uint8_t *dircur = malloc(32);
+  memset(dircur,0,32);
+  char *curname = malloc(11);
+  memset(curname,0x20,11);
+  curname[0]='.';
+  fatdino_createDIR(curname, dircur, cluster, ATTR_DIRECTORY, 0, 0);
+  //upper dir entry (..)
+  uint8_t *dirup = malloc(32);
+  memset(dirup,0,32);
+  char *upname = malloc(11);
+  strncpy(upname,curname,11);
+  upname[1]='.';
+  fatdino_createDIR(upname, dirup, 0, ATTR_DIRECTORY, 0, 0);
+  //create and write cluster to device
+  uint8_t *clus = malloc(512 * bpb->BPB_SecPerClus);
+  memset(clus,0,512 * bpb->BPB_SecPerClus);
+  memcpy(clus,dircur,32);
+  memcpy(clus+32,dirup,32);
+  //TODO:write
+  //clean memory
+  free(curname);
+  free(upname);
+  free(dircur);
+  free(dirup);
+  return 1;
 }
 /*
 

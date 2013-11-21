@@ -517,6 +517,12 @@ int main(int argc, char **argv) {
 	    {
 	      cout<<argv[0]<<": error converting to LFN/SFN\n";
 	    }
+	    //createDir test
+	    if(fatdino_createDir(argv[3], bpb, 0xfedcba98)!=0)
+	    {
+	      cout<<argv[0]<<": dir cluster creation failed!\n";
+	      return 1;
+	    }
 	    //UTF16<-UTF8
 	    char *iconvout = new char[256];
 	    fatdino_ToUTF16(out, iconvout);
