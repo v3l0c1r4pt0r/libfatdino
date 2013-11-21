@@ -230,7 +230,6 @@ uint32_t fatdino_FatToCluster(fatdino_BPB *bpb, uint32_t fat, uint16_t offset);
  * and returns SFN and NTRes byte,
  * returns 0 if only SFN is neccessary, 1 if LFN required too and -1 on fail
  */
-//TODO:
 int fatdino_nameToSfnAndLfn(char *lfn, char *sfn, uint8_t *ntres);
 
 /*
