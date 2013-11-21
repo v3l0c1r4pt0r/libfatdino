@@ -9,6 +9,7 @@
 #include <langinfo.h>
 #include <errno.h>
 #include <ctype.h>
+#include <time.h>
 
 typedef struct __attribute__((__packed__)) fatdino_bootsector {
   uint8_t	BS_jmpBoot[3];
@@ -253,7 +254,7 @@ int fatdino_getFSINFO(char *device, fatdino_BPB *bpb, fatdino_FSINFO *fsinfo);
  * NOTE: if you will give number of non-free cluster here, it will be overwritten!
  * returns 0 on success and 1 on fail
  */
-//TODO:
+//TODO:write to disk
 int fatdino_createDir(char *device, fatdino_BPB *bpb, uint32_t cluster);
 
 /*
@@ -274,5 +275,12 @@ uint8_t fatdino_createLDIR(char *lfn, char *buffer);
 /*
  * function that creates DIR structure and fills 32-byte buffer
  */
-//TODO:creation & write date/time, last access time
+//TODO:last access time; NOTE: time not tested
 void fatdino_createDIR(char *sfn, char *buffer, uint32_t cluster, uint8_t attr, uint32_t filesize, uint8_t ntres);
+
+/*
+ * function that creates new, empty directory with name lfn given as UTF-16LE at dir
+ * returns 0 on success and 1 on fail
+ */
+//TODO:
+uint8_t fatdino_mkdir(char *device, fatdino_BPB *bpb, char *dir, char *lfn);

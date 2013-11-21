@@ -609,9 +609,19 @@ void fatdino_createDIR(char *sfn, char *buffer, uint32_t cluster, uint8_t attr, 
   strncpy(buf->DIR_Name,sfn,11);
   buf->DIR_Attr = attr;
   buf->DIR_NTRes = ntres;
-  //creation date/time
+  //creation & write date
+  time_t timestamp = time(NULL);
+  struct tm* curtime = localtime(&timestamp);
+  buf->DIR_CrtDate = (curtime->tm_year - 80)<<4;
+  buf->DIR_CrtDate |= (curtime->tm_mon)<<5;
+  buf->DIR_CrtDate |= (curtime->tm_mday);
+  buf->DIR_WrtDate = buf->DIR_CrtDate;
+  //and time
+  buf->DIR_CrtTime = (curtime->tm_hour)<<6;
+  buf->DIR_CrtTime |= (curtime->tm_min)<<5;
+  buf->DIR_CrtTime |= ((curtime->tm_sec)/2);
+  buf->DIR_WrtTime = buf->DIR_CrtTime;
   //TODO:last access time
-  //wrt date/time
   buf->DIR_FstClusHI = cluster>>16;
   buf->DIR_FstClusLO = cluster&0xffff;
   buf->DIR_FileSize = filesize;
