@@ -245,8 +245,10 @@ uint32_t fatdino_findNextFree(char *device, fatdino_BPB *bpb, uint32_t start);
 int fatdino_getFSINFO(char *device, fatdino_BPB *bpb, fatdino_FSINFO *fsinfo);
 
 /*
- * function that creates empty directory at given cluster
- * and zeroes rest of the cluster, returns 0 on success and 1 on fail
+ * function that creates empty directory at given cluster,
+ * and zeroes rest of the cluster, it also marks that cluster in 
+ * fat table as deleted so marking as used must be done by user;
+ * returns 0 on success and 1 on fail
  */
 //TODO:
 int fatdino_createDir(char *device, fatdino_BPB *bpb, uint32_t cluster);
