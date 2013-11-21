@@ -235,7 +235,10 @@ int fatdino_nameToSfnAndLfn(char *lfn, char *sfn, uint8_t *ntres);
 /*
  * function that finds next free cluster, starting on cluster start, returns cluster number or 0 on error
  */
-//TODO: find clusters freed after file/dir deletion (maybe in other function?)
+/*
+ * TODO: allow for search only in limited area so it will be possible to search clusters before the one saved 
+ * in FSINFO when no match for the first time
+ */
 uint32_t fatdino_findNextFree(char *device, fatdino_BPB *bpb, uint32_t start);
 
 /*
@@ -246,9 +249,8 @@ int fatdino_getFSINFO(char *device, fatdino_BPB *bpb, fatdino_FSINFO *fsinfo);
 
 /*
  * function that creates empty directory at given cluster,
- * and zeroes rest of the cluster, it also marks that cluster in 
- * fat table as deleted so marking as used must be done by user;
- * NOTE: if you will give number of non-free cluster here, it will be overwritten and treated as free!
+ * and zeroes rest of the cluster;
+ * NOTE: if you will give number of non-free cluster here, it will be overwritten!
  * returns 0 on success and 1 on fail
  */
 //TODO:
